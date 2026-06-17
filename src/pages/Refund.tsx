@@ -9,11 +9,21 @@ import {Input} from "../components/Input"
 import {Select} from "../components/Select"
 import {Upload} from "../components/Upload"
 import {Button} from "../components/Button"
+import {AxiosError} from "axios"
+import {api} from "../services/api"
+
+import {z, ZodError} from "zod"
+
+const refundSchema = z.object({
+    name: z.string().min(3, {message: "Informe um nome claro para sua solicitação"}),
+    category: z.string().min(1, {message: "Informe a categoria"}),
+    amount: z.coerce.number({message: "Informe um valor válido"}).positive({message: "Informe um valor positivo"}),
+})
 
 export function Refund(){
-    const [name, setName] = useState("teste")
-    const [amount, setAmount] = useState("2")
-    const [category, setCategory] = useState("transport")
+    const [name, setName] = useState("")
+    const [amount, setAmount] = useState("")
+    const [category, setCategory] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [fileName, setFileName] = useState<File | null>(null)
 
@@ -21,15 +31,53 @@ export function Refund(){
     const params = useParams<{id: string}>()
 
 
-    function onSubmit(e: React.FormEvent){
+    async function onSubmit(e: React.FormEvent){
         e.preventDefault()
 
         if(params.id){
             return navigate(-1)
         }
 
-        console.log(name, amount, category, fileName)
-        navigate("/confirm", {state: {fromSubmit: true}})
+        try {
+            setIsLoading(true)
+
+            if(!fileName){
+                return alert("Selecione um arquivo de comprovante")
+            }
+
+            const fileUploadForm = new FormData()
+            fileUploadForm.append("file", fileName)
+
+            const response = await api.post("/uploads", fileUploadForm)
+
+            const data = refundSchema.parse({
+                name,
+                category,
+                amount: amount.replace(",",".")
+            })
+            
+            await api.post("/refunds", {...data, filename: response.data.filename})
+
+            alert("Solicitação enviada com sucesso")
+
+            navigate("/confirm", {state: {fromSubmit: true}})
+        } catch (error) {
+            console.log(error)  
+
+            if(error instanceof ZodError){
+                return alert(error.issues[0].message)
+            }
+            
+            if(error instanceof AxiosError){
+                return alert(error.response?.data.message)
+            }
+
+            alert("Não foi possivel enviar a solicitação")
+        } finally {
+            setIsLoading(false)
+        }
+
+        
     }
 
     return (

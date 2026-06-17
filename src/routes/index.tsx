@@ -1,3 +1,8 @@
+import { use } from "react";
+
+import {AuthContext} from "../contexts/AuthContext"
+import {useAuth} from "../hooks/useAuth"
+
 import { BrowserRouter } from "react-router";
 
 import {Loading} from "../components/Loading"
@@ -6,16 +11,9 @@ import {AuthRoutes} from "./AuthRoutes";
 import {EmployeeRoutes} from "./EmployeeRoutes";
 import {ManagerRoutes} from "./ManagerRoutes";
 
-const isLoading = false
-// const session = undefined
-
-const session = {
-    user: {
-        role: "",
-    }
-}
 
 export function Routes(){
+    const {session, isLoading} = useAuth()
 
     function Route(){
         switch (session?.user.role){
