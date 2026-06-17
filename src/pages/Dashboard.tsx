@@ -27,7 +27,6 @@ export function Dashboard(){
 
     function fetchRefunds(e: React.FormEvent){
         e.preventDefault()
-        alert(name)
     }
 
     function handlePagination(action: "next" | "previous"){

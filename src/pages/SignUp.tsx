@@ -1,6 +1,21 @@
 import {Input} from "../components/Input"
 import {Button} from "../components/Button"
 import { useState } from "react"
+import {z, ZodError} from "zod"
+import {useNavigate} from "react-router"
+import {api} from "../services/api"
+
+import {AxiosError} from "axios"
+
+const signUpSchema = z.object({
+        name: z.string().trim().min(1, {message: "infome o nome"}),
+        email: z.string().email({message: "E-mail inválido"}),
+        password: z.string().min(6, {message: "Senha deve possuir ao menos 6 caracteres"}),
+        passwordConfirm: z.string({message: "Confirme a senha"})
+    }).refine((data) => data.password === data.passwordConfirm, {
+        message: "Senhas diferentes",
+        path: ["passwordConfirm"]
+    })
 
 export function SignUp(){
     const [name, setName] = useState("")
@@ -9,10 +24,42 @@ export function SignUp(){
     const [passwordConfirm, setPasswordConfirm] = useState("")
     const [isLoading, setIsLoading] = useState(false)
 
-    function onSubmit(e: React.FormEvent){
+    const navigate = useNavigate()
+
+    async function onSubmit(e: React.FormEvent){
         e.preventDefault()
 
-        console.log(name, email, password, passwordConfirm)
+        try {
+            setIsLoading(true)
+
+            const data = signUpSchema.parse({
+                name,
+                email,
+                password,
+                passwordConfirm
+            })
+
+            await api.post("/users", data)
+
+            if(confirm("Cadastrado com sucesso. Ir para tela de entrar?")){
+                navigate("/")
+            }
+        } catch (error) {
+            console.log(error)
+
+            if(error instanceof ZodError){
+                return alert(error.issues[0].message)
+            }
+
+            if(error instanceof AxiosError){
+                return alert(error.response?.data.message)
+            }
+
+            alert("Não foi possível se cadastrar!")
+        } finally {
+            setIsLoading(false)
+        }
+
     }
 
     return (
