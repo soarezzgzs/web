@@ -1,0 +1,13 @@
+- [ ] Criar um plano de atualização do README (com base no código encontrado)
+- [ ] Confirmar o plano com o usuário
+- [ ] Gerar/atualizar o README.md com:
+  - Visão geral do sistema (fluxos principais)
+  - Tecnologias usadas
+  - Requisitos (Node/NPM)
+  - Como rodar localmente (frontend)
+  - URLs esperadas do backend
+  - Rotas e papéis (employee/manager)
+  - Como autenticação funciona via localStorage
+  - Exemplos de uso (enviar reembolso)
+- [ ] Criar instruções finais de execução (npm install/dev)
+- [ ] Atualizar este arquivo marcando a conclusão
