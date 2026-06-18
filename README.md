@@ -10,7 +10,7 @@ Sistema de **solicitação de reembolso** com autenticação (JWT), upload de co
 ## Visão geral do fluxo
 
 1. **Cadastro**
-   - `POST /sessions`? (não) — o cadastro é `POST /users`.
+   - O cadastro é `POST /users`.
    - O usuário escolhe um perfil (no backend, role é `employee` ou `manager`, padrão `employee`).
 
 2. **Login**
@@ -18,7 +18,7 @@ Sistema de **solicitação de reembolso** com autenticação (JWT), upload de co
    - O frontend grava no **localStorage** e atualiza o header `Authorization` nas requisições.
 
 3. **Employee enviar reembolso**
-   - Tela **Refund** (criar/editar):
+   - Tela **Refund** (criar):
      - Envia o arquivo: `POST /uploads` (campo `file`).
      - Cria o pedido: `POST /refunds` com `name`, `category`, `amount` e `filename`.
    - Após enviar, vai para a tela **Confirm**.
